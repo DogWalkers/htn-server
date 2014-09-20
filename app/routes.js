@@ -19,13 +19,13 @@ function createRestEndpoints(app) {
 
     app.post('/api/clinic/signup', restClinic.signup);
 
-    app.post('/api/patient/signup', restPatient.signup);
-
     app.post('/api/clinic/login', restClinic.login);
 
-    app.post('/api/patient/login', restPatient.login);
-
     app.get('/api/clinic/all', isValidPatient, restClinic.getAll);
+
+    app.post('/api/patient/signup', restPatient.signup);
+
+    app.post('/api/patient/login', restPatient.login);
 
     app.put('/api/patient/queue/:clinicId', restPatient.addToQueue);
 
@@ -33,13 +33,9 @@ function createRestEndpoints(app) {
 
     app.get('/api/patient', restPatient.getSelf);
 
-    //app.get('/api/clinic', restClinic.getClinics);
+    app.get('/api/clinic', restClinic.getSelf);
 
 }
-
-var serverError = function(res) {
-    res.status(500).json({error: "database error"});
-};
 
 var isValidPatient = function (req, res, next) {
 

@@ -99,3 +99,25 @@ exports.getAll = function (req, res) {
         }
     });
 };
+
+exports.getSelf = function (req, res) {
+    var token = req.query.token;
+    tokenUtils.getClinicFromToken(token, function(err, clinic) {
+        if (err || !clinic) {
+            res.status(401).json({error: "invalid token"});
+        } else {
+            var obj = {};
+            obj.clinicId = clinic._id;
+            obj.clinicName = clinic.clinicName;
+            obj.ownerEmail = clinic.ownerEmail;
+            obj.clinicAddress = clinic.clinicAddress;
+            obj.clinicLatitude = clinic.clinicLatitude;
+            obj.clinicLongitude = clinic.clinicLongitude;
+            obj.patientsInQueue = clinic.patientsInQueue;
+            obj.openTime = clinic.openTime;
+            obj.closeTime = clinic.closeTime;
+            obj.dateCreated = clinic.dateCreated;
+            res.json(obj);
+        }
+    });
+};
