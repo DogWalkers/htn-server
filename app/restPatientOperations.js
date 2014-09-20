@@ -86,40 +86,42 @@ exports.addToQueue = function (req, res) {
   var reason = req.body.reasonForVisit;
   tokenUtils.getPatientFromToken(token, function(err, patient) {
       if (err || !patient) {
-        res.status(401).json({error: "invalid token"});
-      } else if (patient.isInQueue) {
-        res.status(403).json({error: "patient is already in a queue"});
-      } else {
-        Clinic.findByIdAndUpdate(clinicId, {$push: { patientsInQueue: {patientId: patient._id, reasonForVisit: reason}}}, function(err, clinic) {
-            if(!err && clinic) {
-                patient.isInQueue = true;
-                patient.save(function(err) {
-                    if (err) return serverError(res);
-                    res.json(clinic);
-                });
-            }
-        });
+        return res.status(401).json({error: "invalid token"});
       }
+      Clinic.findOne({'patientsInQueue.patientId':patient._id}, function (err, clinic) {
+          if(err) {
+              return serverError(res);
+          }
+          if(clinic){
+              return res.status(403).json({error: "patient already in queue"});
+          }
+          Clinic.findByIdAndUpdate(clinicId, {$push: { patientsInQueue: {patientId: patient._id, reasonForVisit: reason}}}, function(err, clinic) {
+              if(!err && clinic) {
+                  return res.json(clinic);
+              } else {
+                  return res.status(500).json({error: "could not find clinic"});
+              }
+          });
+      });
+
   });
 
 };
 
 exports.deleteSelfFromQueue = function (req, res) {
-    var clinicId = req.params.clinicId;
     var token = req.query.token;
     tokenUtils.getPatientFromToken(token, function(err, patient) {
         if (err || !patient) {
             res.status(401).json({error: "invalid token"});
         } else {
-            Clinic.findByIdAndUpdate(clinicId, {$pull: { patientsInQueue: {patientId: patient._id}}}, function(err, doc) {
-                console.log(doc);
-                if(!err) {
-                    patient.isInQueue = false;
-                    patient.save(function(err) {
-                        if (err) return serverError(res);
-                        res.json(doc);
-                    });
+            Clinic.update({'patientsInQueue.patientId':patient._id}, {$pull: { patientsInQueue: {patientId: patient._id}}}, function(err, doc) {
+                if (err) {
+                    return serverError(res);
                 }
+                if (!doc) {
+                    return res.status(403).json({error: "patient is not in queue"});
+                }
+                res.json(patient);
             });
         }
     });
@@ -141,8 +143,11 @@ exports.getSelf = function (req, res) {
             obj.sex = patient.sex;
             obj.dateJoined = patient.dateCreated;
             obj.clinicHistory = patient.clinicHistory;
-            obj.isInQueue = patient.isInQueue;
             res.json(obj);
         }
     });
+};
+
+var serverError = function(res) {
+    res.status(500).json({error: "there was a server error"});
 };

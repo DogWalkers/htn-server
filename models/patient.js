@@ -13,7 +13,6 @@ var patientSchema = mongoose.Schema({
     age: Number,
     sex: String,
     healthCardNumber: String,
-    isInQueue: {type: Boolean, default: false},
     clinicHistory: [{date: Date, text: String}],
     dateCreated: { type: Date, default: Date.now }
 });

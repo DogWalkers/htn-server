@@ -35,6 +35,8 @@ function createRestEndpoints(app) {
 
     app.get('/api/clinic', restClinic.getSelf);
 
+    app.delete('/api/clinic/queue/:patientId', restClinic.deletePatientFromQueue);
+
 }
 
 var isValidPatient = function (req, res, next) {

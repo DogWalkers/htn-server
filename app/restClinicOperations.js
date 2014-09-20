@@ -1,6 +1,7 @@
 var textUtils = require("../utils/textutils");
 var tokenUtils = require("../utils/tokenutils");
 var Clinic = require("../models/clinic");
+var Patient = require("../models/patient");
 
 exports.signup = function(req, res) {
     var clinicName = req.body.clinicName;
@@ -79,7 +80,7 @@ exports.login = function (req, res) {
 
 exports.getAll = function (req, res) {
     Clinic.find({}, function(err, clinics) {
-        if (err) {
+        if (err || !clinics) {
             return serverError(res);
         } else {
             var output = [];
@@ -113,11 +114,32 @@ exports.getSelf = function (req, res) {
             obj.clinicAddress = clinic.clinicAddress;
             obj.clinicLatitude = clinic.clinicLatitude;
             obj.clinicLongitude = clinic.clinicLongitude;
-            obj.patientsInQueue = clinic.patientsInQueue;
             obj.openTime = clinic.openTime;
             obj.closeTime = clinic.closeTime;
             obj.dateCreated = clinic.dateCreated;
             res.json(obj);
         }
     });
+};
+
+exports.deletePatientFromQueue = function (req, res) {
+    var patientId = req.params.clinicId;
+    var token = req.query.token;
+    tokenUtils.getClinicFromToken(token, function(err, clinic) {
+        if (err || !clinic) {
+            res.status(401).json({error: "invalid token"});
+        } else {
+            Clinic.findByIdAndUpdate(clinic._id, {$pull: { patientsInQueue: {patientId: patientId}}}, function(err, doc) {
+                if(!err) {
+                    return res.json(doc);
+                }
+            });
+        }
+    });
+};
+
+
+
+var serverError = function(res) {
+    res.status(500).json({error: "there was a server error"});
 };
