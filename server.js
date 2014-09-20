@@ -3,7 +3,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
-var passport = require('passport');
+//var passport = require('passport');
 var settings = require('./config/settings');
 /**
  *  Define the sample application.
@@ -117,11 +117,9 @@ var SampleApp = function() {
         self.app.use(bodyParser.urlencoded({extended: true}));
         self.app.use(bodyParser.json());
         self.app.use(morgan('combined'));
-        self.app.use(passport.initialize());
         //self.app.use(express.static(__dirname + '/public'));
         self.app.disable("x-powered-by");
-        require('./app/routes.js')(self, passport);
-        require('./config/passport')(passport);
+        require('./app/routes.js')(self);
         require('./config/database')(settings.connection_string);
     };
 
@@ -133,6 +131,7 @@ var SampleApp = function() {
         self.setupVariables();
         //self.populateCache();
         self.setupTerminationHandlers();
+        settings.init();
 
         // Create the express server and routes.
         self.initializeServer();
