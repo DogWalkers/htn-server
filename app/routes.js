@@ -14,7 +14,7 @@ function createRestEndpoints(app) {
 
     app.all('*', function (req, res, next) { //TODO REMOVE THIS BEFORE DEPLOYING
         res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "X-Requested-With");
+        res.header("Access-Control-Allow-Headers", "application/JSON");
         next();
     });
 
@@ -24,16 +24,23 @@ function createRestEndpoints(app) {
 
     app.post('/api/clinic/login', restClinic.login);
 
-    /*//app.post('/api/patient/login', restPatient.getLoginToken);
+    app.post('/api/patient/login', restPatient.login);
 
-   // app.get('/api/clinics/*', tokenUtils.getPatientFromToken());
+    app.get('/api/clinic/all', isValidToken, function(req, res) {
+        res.json({message:"not implemented yet"});
+    });
 
-    app.get('/api/patient/*', restPatient.verifyToken);
+    //app.get('/api/patient/*', restPatient.verifyToken);
 
-    app.get('/api/clinic', restClinic.getClinics);*/
+    //app.get('/api/clinic', restClinic.getClinics);
 
 }
 
 var serverError = function(res) {
     res.status(500).json({error: "database error"});
+};
+
+var isValidToken = function (req, res, next) {
+  var token = req.params.token;
+
 };

@@ -52,3 +52,28 @@ exports.signup = function(req, res) {
         });
     });
 };
+
+exports.login = function (req, res) {
+    var email = req.body.email;
+    var password = req.body.password;
+
+    if (textUtils.isEmpty(email) || textUtils.isEmpty(password)) {
+        return res.status(400).json({error: "Do not leave email or password as empty"});
+    }
+
+    Patient.findOne({"email":email}, function (err, patient) {
+        if (err) {
+            return serverError(res);
+        }
+        if (patient) {
+            if(patient.validPassword(password)) {
+                var token = tokenUtils.generateTokenFromDocument(patient);
+                return res.json({token: token});
+            } else {
+                return res.status(401).json({error: "Invalid password"});
+            }
+        } else {
+            return res.status(401).json({error: "Invalid email"});
+        }
+    });
+};
