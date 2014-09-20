@@ -4,6 +4,7 @@
 
 module.exports = function (server) {
     var app = server.app;
+    app.use(accessControl);
     createRestEndpoints(app);
 };
 
@@ -12,11 +13,7 @@ function createRestEndpoints(app) {
     var restClinic = require('../app/restClinicOperations');
     var restPatient = require('../app/restPatientOperations');
 
-    app.all('*', function (req, res, next) { //TODO REMOVE THIS BEFORE DEPLOYING
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "application/JSON");
-        next();
-    });
+    app.all('*', accessControl);
 
     app.post('/api/clinic/signup', restClinic.signup);
 
@@ -43,4 +40,10 @@ var serverError = function(res) {
 var isValidToken = function (req, res, next) {
   var token = req.params.token;
 
+};
+
+var accessControl = function (req, res, next) { //TODO REMOVE THIS BEFORE DEPLOYING
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
 };
