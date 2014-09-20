@@ -70,3 +70,13 @@ exports.login = function (req, res) {
         }
     });
 };
+
+exports.getAll = function (req, res) {
+    Clinic.find({}, function(err, clinics) {
+        if (err) {
+            return serverError(res);
+        } else {
+            return res.json(clinics);
+        }
+    });
+};

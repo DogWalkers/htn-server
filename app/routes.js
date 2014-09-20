@@ -2,6 +2,8 @@
  * Created by Sahil Jain on 20/09/2014.
  */
 
+var tokenUtils = require("../utils/tokenutils");
+
 module.exports = function (server) {
     var app = server.app;
     app.use(accessControl);
@@ -23,9 +25,7 @@ function createRestEndpoints(app) {
 
     app.post('/api/patient/login', restPatient.login);
 
-    app.get('/api/clinic/all', isValidToken, function(req, res) {
-        res.json({message:"not implemented yet"});
-    });
+    app.get('/api/clinic/all', isValidPatient, restClinic.getAll);
 
     //app.get('/api/patient/*', restPatient.verifyToken);
 
@@ -37,8 +37,16 @@ var serverError = function(res) {
     res.status(500).json({error: "database error"});
 };
 
-var isValidToken = function (req, res, next) {
-  var token = req.params.token;
+var isValidPatient = function (req, res, next) {
+
+  var token = req.query.token || req.body.token;
+  tokenUtils.getPatientFromToken(token, function(err, patient) {
+      if(err || !patient) {
+          res.status(401).json({error: "invalid token"});
+      } else {
+          next();
+      }
+  });
 
 };
 
