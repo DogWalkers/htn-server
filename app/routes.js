@@ -27,9 +27,11 @@ function createRestEndpoints(app) {
 
     app.get('/api/clinic/all', isValidPatient, restClinic.getAll);
 
-    app.put('/api/patient/addtoqueue/:clinicId', restPatient.addToQueue);
+    app.put('/api/patient/queue/:clinicId', restPatient.addToQueue);
 
-    //app.get('/api/patient/*', restPatient.verifyToken);
+    app.delete('/api/patient/queue/:clinicId', restPatient.deleteSelfFromQueue);
+
+    app.get('/api/patient', restPatient.getSelf);
 
     //app.get('/api/clinic', restClinic.getClinics);
 

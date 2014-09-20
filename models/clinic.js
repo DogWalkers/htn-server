@@ -13,7 +13,7 @@ var clinicSchema = mongoose.Schema({
     clinicLongitude: Number,
     openTime: Number,
     closeTime: Number,
-    patientsInQueue: [ {type: mongoose.Schema.Types.ObjectId, ref: 'Patient'} ],
+    patientsInQueue: [ { patientId: {type: mongoose.Schema.Types.ObjectId, ref: 'Patient'}, timeEntered: { type: Date, default: Date.now }, reasonForVisit: String} ],
     dateCreated: { type: Date, default: Date.now }
 });
 

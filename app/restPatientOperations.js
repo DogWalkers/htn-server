@@ -1,6 +1,7 @@
 var textUtils = require("../utils/textutils");
 var tokenUtils = require("../utils/tokenutils");
 var Patient = require("../models/patient");
+var Clinic = require("../models/clinic");
 
 exports.signup = function(req, res) {
     var firstName = req.body.firstName;
@@ -79,18 +80,69 @@ exports.login = function (req, res) {
 };
 
 exports.addToQueue = function (req, res) {
+
   var clinicId = req.params.clinicId;
   var token = req.query.token;
+  var reason = req.body.reasonForVisit;
   tokenUtils.getPatientFromToken(token, function(err, patient) {
       if (err || !patient) {
         res.status(401).json({error: "invalid token"});
       } else if (patient.isInQueue) {
         res.status(403).json({error: "patient is already in a queue"});
       } else {
-        Clinic.findByIdAndUpdate(clinicId, {$push: { patientsInQueue: patient._id}}, function(err, clinic) {
-            res.json(clinic);
+        Clinic.findByIdAndUpdate(clinicId, {$push: { patientsInQueue: {patientId: patient._id, reasonForVisit: reason}}}, function(err, clinic) {
+            if(!err && clinic) {
+                patient.isInQueue = true;
+                patient.save(function(err) {
+                    if (err) return serverError(res);
+                    res.json(clinic);
+                });
+            }
         });
       }
   });
 
+};
+
+exports.deleteSelfFromQueue = function (req, res) {
+    var clinicId = req.params.clinicId;
+    var token = req.query.token;
+    tokenUtils.getPatientFromToken(token, function(err, patient) {
+        if (err || !patient) {
+            res.status(401).json({error: "invalid token"});
+        } else {
+            Clinic.findByIdAndUpdate(clinicId, {$pull: { patientsInQueue: {patientId: patient._id}}}, function(err, doc) {
+                console.log(doc);
+                if(!err) {
+                    patient.isInQueue = false;
+                    patient.save(function(err) {
+                        if (err) return serverError(res);
+                        res.json(doc);
+                    });
+                }
+            });
+        }
+    });
+};
+
+exports.getSelf = function (req, res) {
+    var token = req.query.token;
+    tokenUtils.getPatientFromToken(token, function(err, patient) {
+        if (err || !patient) {
+            res.status(401).json({error: "invalid token"});
+        } else {
+            var obj = {};
+            obj.patientId = patient._id;
+            obj.age = patient.age;
+            obj.email = patient.email;
+            obj.firstName = patient.firstName;
+            obj.lastName = patient.lastName;
+            obj.healthCardNumber = patient.healthCardNumber;
+            obj.sex = patient.sex;
+            obj.dateJoined = patient.dateCreated;
+            obj.clinicHistory = patient.clinicHistory;
+            obj.isInQueue = patient.isInQueue;
+            res.json(obj);
+        }
+    });
 };

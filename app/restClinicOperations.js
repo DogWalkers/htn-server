@@ -83,11 +83,19 @@ exports.getAll = function (req, res) {
             return serverError(res);
         } else {
             var output = [];
-            for (var clinic in clinics) {
+            clinics.forEach(function (clinic) {
                 var obj = {};
+                obj.clinicId = clinic._id;
                 obj.clinicName = clinic.clinicName;
-            }
-            return res.json(clinics);
+                obj.clinicLatitude = clinic.clinicLatitude;
+                obj.clinicLongitude = clinic.clinicLongitude;
+                obj.clinicAddress = clinic.clinicAddress;
+                obj.openTime = clinic.openTime;
+                obj.closeTime = clinic.closeTime;
+                obj.numPatientsWaiting = clinic.patientsInQueue.length;
+                output.push(obj);
+            });
+            return res.json(output);
         }
     });
 };
