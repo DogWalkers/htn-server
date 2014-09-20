@@ -9,8 +9,11 @@ var clinicSchema = mongoose.Schema({
     ownerEmail: {type: String, lowercase: true},
     ownerPassword: String,
     clinicAddress: String,
+    clinicLatitude: Number,
+    clinicLongitude: Number,
     openTime: Number,
     closeTime: Number,
+    patientsInQueue: [ {type: mongoose.Schema.Types.ObjectId, ref: 'Patient'} ],
     dateCreated: { type: Date, default: Date.now }
 });
 

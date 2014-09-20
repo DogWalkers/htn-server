@@ -7,6 +7,8 @@ exports.signup = function(req, res) {
     var ownerEmail = req.body.ownerEmail;
     var ownerPassword = req.body.ownerPassword;
     var clinicAddress = req.body.clinicAddress;
+    var clinicLongitude = req.body.clinicLongitude;
+    var clinicLatitude = req.body.clinicLatitude;
     var openTime = req.body.openTime;
     var closeTime = req.body.closeTime;
 
@@ -14,6 +16,8 @@ exports.signup = function(req, res) {
         textUtils.isEmpty(ownerEmail) ||
         textUtils.isEmpty(ownerPassword) ||
         textUtils.isEmpty(clinicAddress) ||
+        textUtils.isEmpty(clinicLatitude) ||
+        textUtils.isEmpty(clinicLongitude) ||
         textUtils.isEmpty(openTime) ||
         textUtils.isEmpty(closeTime)) {
         return res.status(400).json({error: "You left at least 1 parameter empty"});
@@ -35,6 +39,8 @@ exports.signup = function(req, res) {
         newClinic.openTime = openTime;
         newClinic.closeTime = closeTime;
         newClinic.clinicAddress = clinicAddress;
+        newClinic.clinicLatitude = clinicLatitude;
+        newClinic.clinicLongitude = clinicLongitude;
         newClinic.dateCreated = Date.now();
         newClinic.save(function (err, doc) {
             if (err) {
@@ -76,6 +82,11 @@ exports.getAll = function (req, res) {
         if (err) {
             return serverError(res);
         } else {
+            var output = [];
+            for (var clinic in clinics) {
+                var obj = {};
+                obj.clinicName = clinic.clinicName;
+            }
             return res.json(clinics);
         }
     });

@@ -27,6 +27,8 @@ function createRestEndpoints(app) {
 
     app.get('/api/clinic/all', isValidPatient, restClinic.getAll);
 
+    app.put('/api/patient/addtoqueue/:clinicId', restPatient.addToQueue);
+
     //app.get('/api/patient/*', restPatient.verifyToken);
 
     //app.get('/api/clinic', restClinic.getClinics);

@@ -77,3 +77,20 @@ exports.login = function (req, res) {
         }
     });
 };
+
+exports.addToQueue = function (req, res) {
+  var clinicId = req.params.clinicId;
+  var token = req.query.token;
+  tokenUtils.getPatientFromToken(token, function(err, patient) {
+      if (err || !patient) {
+        res.status(401).json({error: "invalid token"});
+      } else if (patient.isInQueue) {
+        res.status(403).json({error: "patient is already in a queue"});
+      } else {
+        Clinic.findByIdAndUpdate(clinicId, {$push: { patientsInQueue: patient._id}}, function(err, clinic) {
+            res.json(clinic);
+        });
+      }
+  });
+
+};
