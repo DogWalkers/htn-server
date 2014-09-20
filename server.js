@@ -1,9 +1,10 @@
 #!/bin/env node
 //  OpenShift sample Node application
 var express = require('express');
-var fs      = require('fs');
-
-
+var bodyParser = require('body-parser');
+var morgan = require('morgan');
+var passport = require('passport');
+var settings = require('./config/settings');
 /**
  *  Define the sample application.
  */
@@ -30,7 +31,7 @@ var SampleApp = function() {
             //  allows us to run/test the app locally.
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = "127.0.0.1";
-        };
+        }
     };
 
 
@@ -112,13 +113,16 @@ var SampleApp = function() {
      *  the handlers.
      */
     self.initializeServer = function() {
-        self.createRoutes();
-        self.app = express.createServer();
-
-        //  Add handlers for the app (from the routes).
-        for (var r in self.routes) {
-            self.app.get(r, self.routes[r]);
-        }
+        self.app = express();
+        self.app.use(bodyParser.urlencoded({extended: true}));
+        self.app.use(bodyParser.json());
+        self.app.use(morgan('combined'));
+        self.app.use(passport.initialize());
+        //self.app.use(express.static(__dirname + '/public'));
+        self.app.disable("x-powered-by");
+        require('./app/routes.js')(self, passport);
+        require('./config/passport')(passport);
+        require('./config/database')(settings.connection_string);
     };
 
 
@@ -127,7 +131,7 @@ var SampleApp = function() {
      */
     self.initialize = function() {
         self.setupVariables();
-        self.populateCache();
+        //self.populateCache();
         self.setupTerminationHandlers();
 
         // Create the express server and routes.

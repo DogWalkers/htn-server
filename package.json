@@ -1,7 +1,7 @@
 {
-  "name": "OpenShift-Sample-App",
+  "name": "Hack-The-North",
   "version": "1.0.0",
-  "description": "OpenShift Sample Application",
+  "description": "Hack The North",
   "keywords": [
     "OpenShift",
     "Node.js",
@@ -9,9 +9,9 @@
     "openshift"
   ],
   "author": {
-    "name": "OpenShift",
-    "email": "ramr@example.org",
-    "url": "http://www.openshift.com/"
+    "name": "DogWalkers",
+    "email": "",
+    "url": ""
   },
   "homepage": "http://www.openshift.com/",
   "repository": {
@@ -25,7 +25,16 @@
   },
 
   "dependencies": {
-    "express": "~3.4.4"
+      "jwt-simple": "latest",
+      "bcrypt-nodejs": "latest",
+      "body-parser": "latest",
+      "ejs": "latest",
+      "express": "latest",
+      "mongodb": "latest",
+      "mongoose": "latest",
+      "morgan": "latest",
+      "passport": "latest",
+      "passport-local": "latest"
   },
   "devDependencies": {},
   "bundleDependencies": [],
