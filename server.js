@@ -94,12 +94,11 @@ var SampleApp = function() {
         self.app.use(bodyParser.urlencoded({extended: true}));
         self.app.use(bodyParser.json());
         self.app.use(morgan('combined'));
-        //self.app.use(express.static(__dirname + '/public'));
+        self.app.use(express.static(__dirname + '/public'));
         self.app.disable("x-powered-by");
         require('./app/routes.js')(self);
         require('./config/database')(settings.connection_string);
     };
-
 
     /**
      *  Initializes the sample application.
