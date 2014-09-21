@@ -116,6 +116,7 @@ exports.getSelf = function (req, res) {
             obj.clinicLongitude = clinic.clinicLongitude;
             obj.openTime = clinic.openTime;
             obj.closeTime = clinic.closeTime;
+            obj.patientsInQueue = clinic.patientsInQueue;
             obj.dateCreated = clinic.dateCreated;
             res.json(obj);
         }
