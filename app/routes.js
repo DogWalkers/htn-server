@@ -27,7 +27,7 @@ function createRestEndpoints(app) {
 
     app.post('/api/patient/login', restPatient.login);
 
-    app.put('/api/patient/queue/:clinicId', restPatient.addToQueue);
+    app.post('/api/patient/queue/:clinicId', restPatient.addToQueue);
 
     app.delete('/api/patient/queue/:clinicId', restPatient.deleteSelfFromQueue);
 
