@@ -95,7 +95,8 @@ exports.addToQueue = function (req, res) {
           if(clinic){
               return res.status(403).json({error: "patient already in queue"});
           }
-          Clinic.findByIdAndUpdate(clinicId, {$push: { patientsInQueue: {patientId: patient._id, reasonForVisit: reason}}}, function(err, clinic) {
+          var name = patient.firstName + " " + patient.lastName;
+          Clinic.findByIdAndUpdate(clinicId, {$push: { patientsInQueue: {patientId: patient._id, patientName: name, reasonForVisit: reason}}}, function(err, clinic) {
               if(!err && clinic) {
                   return res.json(clinic);
               } else {
